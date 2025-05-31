@@ -1,25 +1,42 @@
-const { poolPromise, sql } = require('../database/connection');
+const service = require('../services/casos.service');
 
 exports.obtenerCasos = async (req, res) => {
     try {
-        const pool = await poolPromise;
-        const result = await pool.request().execute('sp_obtener_casos');
-        res.json(result.recordset);
+        const data = await service.getAll();
+        res.json(data);
     } catch (err) {
-        res.status(500).json({ error: 'Error al obtener casos', details: err.message });
+        res.status(500).json({ error: err.message });
     }
 };
 
 exports.crearCaso = async (req, res) => {
-    const { titulo, fiscal_id } = req.body;
     try {
-        const pool = await poolPromise;
-        const result = await pool.request()
-            .input('titulo', sql.VarChar, titulo)
-            .input('fiscal_id', sql.Int, fiscal_id)
-            .execute('sp_crear_caso');
-        res.status(201).json({ message: 'Caso creado exitosamente' });
+        const { titulo, fiscalId } = req.body;
+        const nuevo = await service.create({ titulo, fiscalId });
+        res.status(201).json(nuevo);
     } catch (err) {
-        res.status(500).json({ error: 'Error al crear caso', details: err.message });
+        res.status(400).json({ error: err.message });
+    }
+};
+
+exports.reasignarCaso = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nuevoFiscalId } = req.body;
+        const actualizado = await service.reassign(id, nuevoFiscalId);
+        res.json(actualizado);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+};
+
+exports.actualizarEstado = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { estado } = req.body;
+        const actualizado = await service.updateStatus(id, estado);
+        res.json(actualizado);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
     }
 };

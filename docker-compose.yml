@@ -6,17 +6,18 @@ services:
       SA_PASSWORD: "${DB_PASSWORD}"
       ACCEPT_EULA: "Y"
     ports:
-      - "1433:1433"
+      - ${DB_PORT}:${DB_PORT}
     volumes:
       - sqlserverdata:/var/opt/mssql
 
   backend:
     build: ./backend
     environment:
-      DB_USER: sa
-      DB_PASS: ${DB_PASSWORD}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
       DB_SERVER: ${DB_SERVER}
       DB_NAME: ${DB_NAME}
+      DB_PORT: ${DB_PORT}
     depends_on:
       - sqlserver
     ports:

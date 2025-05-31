@@ -4,5 +4,7 @@ const casosController = require('../controllers/casos.controller');
 
 router.get('/', casosController.obtenerCasos);
 router.post('/', casosController.crearCaso);
+router.put('/:id/reasignar', casosController.reasignarCaso);
+router.patch('/:id/estado', casosController.actualizarEstado);
 
 module.exports = router;
