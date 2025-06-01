@@ -7,6 +7,10 @@ services:
       ACCEPT_EULA: "Y"
     ports:
       - ${DB_PORT}:${DB_PORT}
+    healthcheck:
+      test: [ "CMD-SHELL", "echo > /dev/tcp/localhost/1433" ]
+      interval: 5s
+      retries: 20
     volumes:
       - sqlserverdata:/var/opt/mssql
 

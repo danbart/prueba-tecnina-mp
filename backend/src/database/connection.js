@@ -4,22 +4,52 @@ const config = {
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     server: process.env.DB_SERVER,
-    database: process.env.DB_NAME,
     options: {
-        encrypt: false,
+        encrypt: true,
         trustServerCertificate: true,
     },
 };
 
-const poolPromise = new sql.ConnectionPool(config)
-    .connect()
-    .then(pool => {
-        console.log('Conectado a SQL Server');
-        return pool;
-    })
-    .catch(err => {
-        console.error('Error de conexión a SQL Server', err);
-        process.exit(1);
-    });
+async function waitPool(cfg, maxTries = 10, delayMs = 3000) {
+    let tries = 0;
+    while (true) {
+        try {
+            return await sql.connect(cfg);
+        } catch (err) {
+            if (++tries >= maxTries) throw err;
+            console.log(`⏳ SQL no disponible, reintento ${tries}/${maxTries}…`);
+            await new Promise(r => setTimeout(r, delayMs));
+        }
+    }
+}
 
-module.exports = { sql, poolPromise };
+async function ensureDatabase() {
+
+    const masterPool = await waitPool({ ...config, database: 'master' });
+
+    const { recordset } = await masterPool.request()
+        .query("SELECT COUNT(*) AS n FROM sys.databases WHERE name = 'ministerio'");
+
+    if (recordset[0].n === 0) {
+        console.log('📀  Creando base de datos ministerio…');
+        await masterPool.request().query('CREATE DATABASE ministerio');
+    }
+
+    await masterPool.close();
+}
+
+let poolPromise;
+
+async function init() {
+    if (!poolPromise) {
+        await ensureDatabase();
+        poolPromise = sql.connect({ ...config, database: 'ministerio' });
+    }
+    return poolPromise;
+}
+
+module.exports = {
+    sql,
+    poolPromise: init()
+};
+
