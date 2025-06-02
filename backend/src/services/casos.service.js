@@ -17,9 +17,10 @@ const casosService = {
     },
 
     /** crea un caso y lo devuelve */
-    create: async ({ titulo, fiscalId }) => {
+    create: async ({ id, titulo, fiscalId }) => {
         const pool = await poolPromise;
         const { recordset } = await pool.request()
+            .input('id', sql.Int, id)
             .input('titulo', sql.NVarChar, titulo)
             .input('fiscalId', sql.Int, fiscalId)
             .execute('sp_crear_caso');
@@ -39,6 +40,13 @@ const casosService = {
             .input('id_caso', sql.Int, idCaso)
             .input('estado', sql.NVarChar, nuevoEstado)
             .execute('sp_actualizar_estado_caso');
+    },
+    history: async id => {
+        const pool = await poolPromise;
+        const { recordset } = await pool.request()
+            .input('id_caso', sql.Int, id)
+            .execute('sp_historial_caso');
+        return recordset;
     }
 };
 

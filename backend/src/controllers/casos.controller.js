@@ -12,7 +12,17 @@ exports.obtenerCasos = async (req, res) => {
 exports.crearCaso = async (req, res) => {
     try {
         const { titulo, fiscalId } = req.body;
-        const nuevo = await service.create({ titulo, fiscalId });
+        const nuevo = await service.create({ id: null, titulo, fiscalId });
+        res.status(201).json(nuevo);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+};
+
+exports.updateCaso = async (req, res) => {
+    try {
+        const { id, titulo, fiscalId } = req.body;
+        const nuevo = await service.create({ id, titulo, fiscalId });
         res.status(201).json(nuevo);
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -39,4 +49,9 @@ exports.actualizarEstado = async (req, res) => {
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
+};
+
+exports.history = async (req, res) => {
+    const h = await service.history(req.params.id);
+    res.json(h);
 };

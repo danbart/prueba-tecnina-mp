@@ -29,6 +29,7 @@ async function runSqlFile(pool, filename) {
     const full = path.join(__dirname, '../../sql', filename);
     const script = await fs.readFile(full, 'utf8');
 
+    script = script.replace(/\r\n/g, '\n');
 
     const batches = script
         .split(/^\s*GO\s*$/gmi)
