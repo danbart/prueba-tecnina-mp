@@ -6,11 +6,14 @@ export default function Navbar() {
     return (
         <nav className="bg-gray-800 text-white p-3 flex gap-4">
             <Link to="/" className="font-bold">MP‑Casos</Link>
-            {token && (
+            {token ? (
                 <>
                     <Link to="/casos">Casos</Link>
+                    <Link to="/casos/nuevo">Nuevo caso</Link>
                     <button className="ml-auto" onClick={logout}>Cerrar sesión</button>
                 </>
+            ) : (
+                <Link className="ml-auto" to="/register">Registrarse</Link>
             )}
         </nav>
     );

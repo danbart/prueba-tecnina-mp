@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
@@ -38,6 +38,7 @@ export default function Login() {
                 />
                 {err && <p className="text-red-500 text-sm">{err}</p>}
                 <button className="bg-blue-600 text-white rounded p-2">Entrar</button>
+                <Link to="/register" className="text-sm text-blue-600">Crear cuenta</Link>
             </form>
         </div>
     );

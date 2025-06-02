@@ -1,4 +1,6 @@
 const sql = require('mssql');
+const fs = require('fs/promises');
+const path = require('path');
 
 const config = {
     user: process.env.DB_USER,
@@ -23,6 +25,21 @@ async function waitPool(cfg, maxTries = 10, delayMs = 3000) {
     }
 }
 
+async function runSqlFile(pool, filename) {
+    const full = path.join(__dirname, '../../sql', filename);
+    const script = await fs.readFile(full, 'utf8');
+
+
+    const batches = script
+        .split(/^\s*GO\s*$/gmi)
+        .filter(Boolean);
+
+    for (const stmt of batches) {
+        await pool.request().batch(stmt);
+    }
+    console.log(`✅  Ejecutado ${filename} (${batches.length} lotes)`);
+}
+
 async function ensureDatabase() {
 
     const masterPool = await waitPool({ ...config, database: 'master' });
@@ -36,6 +53,13 @@ async function ensureDatabase() {
     }
 
     await masterPool.close();
+
+    const pool = await waitPool({ ...config, database: 'ministerio' });
+
+    await runSqlFile(pool, 'tables.sql');
+    await runSqlFile(pool, 'procedures.sql');
+
+    return pool;
 }
 
 let poolPromise;
@@ -43,7 +67,7 @@ let poolPromise;
 async function init() {
     if (!poolPromise) {
         await ensureDatabase();
-        poolPromise = sql.connect({ ...config, database: 'ministerio' });
+        poolPromise = ensureDatabase();
     }
     return poolPromise;
 }

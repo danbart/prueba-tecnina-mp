@@ -1,4 +1,5 @@
 const Usuario = require('../models/Usuario');
+const { poolPromise, sql } = require('../database/connection');
 const bcrypt = require('bcryptjs');
 const users = [];
 let uSeq = 1;
@@ -10,11 +11,21 @@ let uSeq = 1;
 })();
 
 module.exports = {
-    findByEmail: async email => users.find(u => u.email === email),
+    findByEmail: async email => {
+        const pool = await poolPromise;
+        const { recordset } = await pool.request()
+            .input('correo', sql.NVarChar, email)
+            .execute('sp_get_usuario_por_email');
+        return recordset[0] || null;
+    },
     create: async ({ nombre, email, password, rol }) => {
-        const passwordHash = await bcrypt.hash(password, 10);
-        const user = new Usuario({ id: uSeq++, nombre, email, passwordHash, rol });
-        users.push(user);
-        return user;
+        const hash = await bcrypt.hash(password, 10);
+        const pool = await poolPromise;
+        await pool.request()
+            .input('nombre', sql.NVarChar, nombre)
+            .input('correo', sql.NVarChar, email)
+            .input('hash', sql.NVarChar, hash)
+            .input('rol', sql.NVarChar, rol)
+            .execute('sp_crear_usuario');
     }
 };
