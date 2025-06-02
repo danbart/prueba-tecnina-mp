@@ -27,7 +27,7 @@ async function waitPool(cfg, maxTries = 10, delayMs = 3000) {
 
 async function runSqlFile(pool, filename) {
     const full = path.join(__dirname, '../../sql', filename);
-    const script = await fs.readFile(full, 'utf8');
+    let script = await fs.readFile(full, 'utf8');
 
     script = script.replace(/\r\n/g, '\n');
 

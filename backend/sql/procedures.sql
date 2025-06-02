@@ -27,7 +27,7 @@ GO
 
 /* Crear caso */
 CREATE OR ALTER PROCEDURE sp_crear_caso
-  @id       INT          = NULL,
+  @id       INT = NULL,
   @titulo   NVARCHAR(200),
   @fiscalId INT
 AS

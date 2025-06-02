@@ -27,17 +27,6 @@ IF COL_LENGTH ('Usuarios', 'fiscaliaId') IS NULL
 ALTER TABLE Usuarios ADD fiscaliaId INT REFERENCES Fiscalias (id);
 
 GO
-/* Historial de estados */
-IF OBJECT_ID ('CasosHistorial') IS NULL
-CREATE TABLE
-    CasosHistorial (
-        id INT IDENTITY PRIMARY KEY,
-        idCaso INT NOT NULL REFERENCES Casos (id),
-        estado NVARCHAR (20) NOT NULL,
-        fecha DATETIME2 NOT NULL DEFAULT SYSDATETIME ()
-    );
-
-GO
 /* Casos */
 IF OBJECT_ID ('Casos') IS NULL
 CREATE TABLE
@@ -48,6 +37,17 @@ CREATE TABLE
         fiscalId INT NOT NULL,
         fechaCreacion DATETIME2 NOT NULL DEFAULT SYSDATETIME (),
         CONSTRAINT FK_Casos_Fiscal FOREIGN KEY (fiscalId) REFERENCES Usuarios (id)
+    );
+
+GO
+/* Historial de estados */
+IF OBJECT_ID ('CasosHistorial') IS NULL
+CREATE TABLE
+    CasosHistorial (
+        id INT IDENTITY PRIMARY KEY,
+        idCaso INT NOT NULL REFERENCES Casos (id),
+        estado NVARCHAR (20) NOT NULL,
+        fecha DATETIME2 NOT NULL DEFAULT SYSDATETIME ()
     );
 
 GO
