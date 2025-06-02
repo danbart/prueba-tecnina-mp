@@ -1,0 +1,17 @@
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
+export default function Navbar() {
+    const { token, logout } = useAuth();
+    return (
+        <nav className="bg-gray-800 text-white p-3 flex gap-4">
+            <Link to="/" className="font-bold">MP‑Casos</Link>
+            {token && (
+                <>
+                    <Link to="/casos">Casos</Link>
+                    <button className="ml-auto" onClick={logout}>Cerrar sesión</button>
+                </>
+            )}
+        </nav>
+    );
+}

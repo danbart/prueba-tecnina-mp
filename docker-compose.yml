@@ -22,6 +22,9 @@ services:
       DB_SERVER: ${DB_SERVER}
       DB_NAME: ${DB_NAME}
       DB_PORT: ${DB_PORT}
+    command: npm run dev
+    volumes:
+      - ./backend:/app
     depends_on:
       - sqlserver
     ports:
@@ -31,6 +34,9 @@ services:
     build: ./frontend
     ports:
       - ${PORT_FRONTEND}:${PORT_FRONTEND}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - backend
 
