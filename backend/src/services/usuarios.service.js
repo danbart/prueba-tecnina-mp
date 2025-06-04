@@ -27,5 +27,17 @@ module.exports = {
             .input('hash', sql.NVarChar, hash)
             .input('rol', sql.NVarChar, rol)
             .execute('sp_crear_usuario');
-    }
+    },
+    getAll: async () => {
+        const pool = await poolPromise;
+        const { recordset } = await pool.request().execute('sp_get_usuarios');
+        return recordset.map(u => new Usuario(u));
+    },
+    getById: async id => {
+        const pool = await poolPromise;
+        const { recordset } = await pool.request()
+            .input('id', sql.Int, id)
+            .execute('sp_get_usuario_por_id');
+        return recordset[0] ? new Usuario(recordset[0]) : null;
+    },
 };

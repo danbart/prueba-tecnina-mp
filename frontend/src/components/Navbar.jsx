@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 export default function Navbar() {
     const { token, logout } = useAuth();
     return (
-        <nav className="bg-gray-800 text-white p-3 flex gap-4">
+        <nav className="block px-4 py-2 rounded hover:bg-gray-700 md:inline md:py-0">
             <Link to="/" className="font-bold">MP‑Casos</Link>
             {token ? (
                 <>
