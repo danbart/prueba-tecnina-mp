@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
@@ -22,6 +23,7 @@ export default function Casos() {
                         <th className="p-2 border">Título</th>
                         <th className="p-2 border">Estado</th>
                         <th className="p-2 border">Fiscal</th>
+                        <th className="p-2 border">Fecha</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,7 +34,8 @@ export default function Casos() {
                             </td>
                             <td className="p-2 border">{c.titulo}</td>
                             <td className="p-2 border">{c.estado}</td>
-                            <td className="p-2 border">{c.fiscalId}</td>
+                            <td className="p-2 border">{c.nombre}</td>
+                            <td className="p-2 border">{moment(c.fechaCreacion).format('DD/MM/yyyy')}</td>
                         </tr>
                     ))}
                 </tbody>

@@ -19,10 +19,30 @@ AS
 SELECT TOP 1 * FROM Usuarios WHERE email=@correo;
 GO
 
+CREATE OR ALTER PROCEDURE sp_get_usuarios
+AS
+SELECT u.id, u.nombre, u.email, u.rol, f.nombre AS fiscalia
+FROM Usuarios u
+LEFT JOIN Fiscalias f ON u.fiscaliaId = f.id
+WHERE u.rol <> 'admin'
+ORDER BY u.nombre;
+GO
+
+CREATE OR ALTER PROCEDURE sp_get_usuario_por_id
+  @id INT
+AS
+SELECT u.id, u.nombre, u.email, u.rol, f.nombre AS fiscalia
+FROM Usuarios u
+LEFT JOIN Fiscalias f ON u.fiscaliaId = f.id
+WHERE u.id = @id;
+GO
+
 /* Obtener todos los casos */
 CREATE OR ALTER PROCEDURE sp_obtener_casos
 AS
-SELECT * FROM Casos;
+SELECT c.id, c.titulo, c.estado, c.fechaCreacion, u.nombre, u.email FROM Casos c left join Usuarios u on c.fiscalId=u.id
+WHERE c.estado<>'eliminado'
+ORDER BY c.fechaCreacion DESC;
 GO
 
 /* Crear caso */
